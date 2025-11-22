@@ -414,7 +414,8 @@ class SpeechRecognitionExperiment:
         plot_feature_distribution(
             self.X, self.y, self.feature_names,
             title="Feature Distribution by Class",
-            save_path=os.path.join(exp_dir, 'feature_distribution.png')
+            save_path=os.path.join(exp_dir, 'feature_distribution.png'),
+            class_names=self.class_names
         )
 
         # 特征统计

@@ -5,11 +5,39 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib import rcParams
+from matplotlib.font_manager import FontProperties
 import os
+import sys
 
-# 设置中文字体
-rcParams['font.sans-serif'] = ['Arial Unicode MS', 'SimHei', 'DejaVu Sans']
-rcParams['axes.unicode_minus'] = False
+# 设置中文字体支持
+def setup_chinese_fonts():
+    """配置matplotlib以支持中文显示"""
+    # macOS系统优先使用的中文字体列表
+    chinese_fonts = [
+        'Arial Unicode MS',    # macOS
+        'PingFang SC',         # macOS (苹方)
+        'Heiti SC',            # macOS (黑体-简)
+        'STSong',              # macOS (宋体)
+        'SimHei',              # Windows/Linux (黑体)
+        'Microsoft YaHei',     # Windows (微软雅黑)
+        'WenQuanYi Micro Hei', # Linux (文泉驿微米黑)
+        'DejaVu Sans',         # 备用
+    ]
+
+    # 设置字体
+    rcParams['font.sans-serif'] = chinese_fonts
+    rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+
+    # 设置默认字体大小
+    rcParams['font.size'] = 10
+    rcParams['axes.titlesize'] = 12
+    rcParams['axes.labelsize'] = 11
+    rcParams['xtick.labelsize'] = 10
+    rcParams['ytick.labelsize'] = 10
+    rcParams['legend.fontsize'] = 10
+
+# 初始化字体配置
+setup_chinese_fonts()
 
 # 设置seaborn风格
 sns.set_style("whitegrid")
@@ -151,17 +179,25 @@ def plot_confusion_matrix(cm, class_names, title="Confusion Matrix", save_path=N
 
     Args:
         cm: 混淆矩阵
-        class_names: 类别名称列表
+        class_names: 类别名称列表（支持中文）
         title: 图表标题
         save_path: 保存路径
     """
+    # 确保中文字体设置已应用
+    setup_chinese_fonts()
+
     plt.figure(figsize=(10, 8))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
                 xticklabels=class_names, yticklabels=class_names,
                 cbar_kws={'label': 'Count'})
-    plt.xlabel('Predicted Label')
-    plt.ylabel('True Label')
-    plt.title(title)
+    plt.xlabel('Predicted Label (预测标签)', fontsize=11)
+    plt.ylabel('True Label (真实标签)', fontsize=11)
+    plt.title(title, fontsize=13, fontweight='bold')
+
+    # 旋转x轴标签以更好地显示中文
+    plt.xticks(rotation=45, ha='right')
+    plt.yticks(rotation=0)
+
     plt.tight_layout()
 
     if save_path:
@@ -305,7 +341,8 @@ def plot_mlp_training_history(train_losses, train_accuracies,
 
 
 def plot_feature_distribution(features, labels, feature_names,
-                             title="Feature Distribution", save_path=None):
+                             title="Feature Distribution", save_path=None,
+                             class_names=None):
     """
     绘制特征分布
 
@@ -315,7 +352,11 @@ def plot_feature_distribution(features, labels, feature_names,
         feature_names: 特征名称列表
         title: 图表标题
         save_path: 保存路径
+        class_names: 类别名称列表（可选，支持中文）
     """
+    # 确保中文字体设置已应用
+    setup_chinese_fonts()
+
     n_features = min(len(feature_names), 9)  # 最多显示9个特征
 
     fig, axes = plt.subplots(3, 3, figsize=(15, 12))
@@ -324,7 +365,13 @@ def plot_feature_distribution(features, labels, feature_names,
     for i in range(n_features):
         for label in np.unique(labels):
             mask = labels == label
-            axes[i].hist(features[mask, i], alpha=0.6, label=f'Class {label}', bins=20)
+            # 使用类别名称（如果提供）或标签索引
+            if class_names is not None and label < len(class_names):
+                label_text = class_names[label]
+            else:
+                label_text = f'Class {label}'
+
+            axes[i].hist(features[mask, i], alpha=0.6, label=label_text, bins=20)
 
         axes[i].set_xlabel(feature_names[i])
         axes[i].set_ylabel('Frequency')

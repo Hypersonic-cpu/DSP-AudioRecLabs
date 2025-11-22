@@ -6,18 +6,20 @@ import os
 # ==================== 路径配置 ====================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 数据集路径配置
-# 方式1：使用项目内的data目录（默认）
-# DATA_DIR = os.path.join(BASE_DIR, 'data')
+# ==================== 数据集路径配置 ====================
+# 数据集类型选择：'name' 或 'number'
+# - 'name': 中文名字数据集
+# - 'number': 数字数据集
+DATASET_TYPE = os.environ.get('DATASET_TYPE', 'name')  # 默认使用中文名字数据集
 
-# 方式2：使用downloads目录（推荐，如果数据在downloads文件夹）
-# DATA_DIR = os.path.join(os.path.expanduser('~'), 'Downloads', 'speech_data')
+# 数据集路径字典
+DATASET_PATHS = {
+    'name': os.path.join(os.path.expanduser('~'), 'Downloads', 'speech_data_name'),     # 中文名字
+    'number': os.path.join(os.path.expanduser('~'), 'Downloads', 'speech_data_number'), # 数字
+}
 
-# 方式3：使用自定义绝对路径
-# DATA_DIR = '/path/to/your/data'
-
-# 当前配置：优先使用环境变量，否则使用默认data目录
-DATA_DIR = os.environ.get('SPEECH_DATA_DIR', r'/Users/ding/Downloads/speech_data_cleaned')
+# 当前使用的数据集路径（可通过环境变量 SPEECH_DATA_DIR 覆盖）
+DATA_DIR = os.environ.get('SPEECH_DATA_DIR', DATASET_PATHS[DATASET_TYPE])
 
 # 结果保存目录
 RESULTS_DIR = os.path.join(BASE_DIR, 'results')
@@ -30,7 +32,7 @@ SAMPLE_RATE = 44100              # 采样率（Hz）
 NORMALIZE = True                 # 是否归一化
 
 # ==================== 端点检测参数 ====================
-FRAME_LENGTH_MS = 20             # 帧长（毫秒）
+FRAME_LENGTH_MS = 25             # 帧长（毫秒）
 FRAME_SHIFT_MS = 10              # 帧移（毫秒）
 
 # 自动计算帧长和帧移（采样点数）
@@ -70,3 +72,14 @@ RANDOM_SEED = 42                 # 随机种子
 # ==================== 可视化参数 ====================
 FIGURE_DPI = 150
 FIGURE_SIZE = (12, 8)
+
+# ==================== 消融实验参数 ====================
+# 学习率sweep范围（增加更多点让曲线平滑）
+LEARNING_RATES = [0.0001, 0.0003, 0.0005, 0.001, 0.003, 0.005, 0.008, 0.01, 0.03, 0.05, 0.08]
+
+# 帧长sweep范围（毫秒）- 增加更多点
+FRAME_LENGTH_MS_RANGE = [8, 10, 12, 15, 18, 20, 25, 30, 35, 40, 45, 50]
+
+# 帧移sweep范围（毫秒）- 扩大范围，一般最优在帧长的30-50%
+# 对于20ms帧长，最优通常在6-10ms之间，但我们测试更大范围
+FRAME_SHIFT_MS_RANGE = [3, 5, 7, 8, 10, 12, 15, 18, 20, 25, 30]
