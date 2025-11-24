@@ -15,9 +15,9 @@ from tqdm import tqdm
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import config
-from src.audio_processing import process_audio_file
-from src.feature_extraction import extract_features_from_frames, normalize_features, pad_or_truncate_sequence
-from src.models import create_classifier
+from src.time_domain.audio_processing import process_audio_file
+from src.time_domain.feature_extraction import extract_features_from_frames, normalize_features, pad_or_truncate_sequence
+from src.time_domain.models import create_classifier
 
 print("="*70)
 print("特征提取方法对比实验")

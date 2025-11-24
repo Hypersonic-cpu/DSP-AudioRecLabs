@@ -1,6 +1,3 @@
-"""
-分类器模块：包含传统机器学习分类器和MLP神经网络
-"""
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -16,8 +13,6 @@ from torch.utils.data import TensorDataset, DataLoader
 # ==================== 传统机器学习分类器 ====================
 
 class TraditionalClassifier:
-    """传统分类器的统一封装"""
-
     def __init__(self, classifier_type='knn', **kwargs):
         """
         Args:
@@ -75,8 +70,6 @@ class TraditionalClassifier:
 # ==================== MLP神经网络 ====================
 
 class MLPClassifier(nn.Module):
-    """多层感知器神经网络"""
-
     def __init__(self, input_size, hidden_layers, num_classes, dropout=0.3):
         """
         Args:

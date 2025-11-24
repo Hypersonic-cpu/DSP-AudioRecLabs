@@ -1,34 +1,12 @@
-"""
-音频处理模块：加载、预处理、端点检测、分帧加窗
-"""
 import numpy as np
-import wave
-# from scipy import signal as sp_signal
 
+from ..driver.loader import load_wav
 
 def remove_dc(audio_data):
-    """
-    去除直流分量
-
-    Args:
-        audio_data: 音频数据
-
-    Returns:
-        去直流后的音频数据
-    """
     return audio_data - np.mean(audio_data)
 
 
 def normalize_audio(audio_data):
-    """
-    归一化音频到[-1, 1]
-
-    Args:
-        audio_data: 音频数据
-
-    Returns:
-        归一化后的音频数据
-    """
     max_val = np.max(np.abs(audio_data))
     if max_val > 0:
         return audio_data / max_val
@@ -36,56 +14,20 @@ def normalize_audio(audio_data):
 
 
 def preprocess(audio_data):
-    """
-    预处理：去直流 + 归一化
-
-    Args:
-        audio_data: 原始音频数据
-
-    Returns:
-        预处理后的音频数据
-    """
     audio_data = remove_dc(audio_data)
     audio_data = normalize_audio(audio_data)
     return audio_data
 
 
 def compute_short_time_energy(frame):
-    """
-    计算短时能量
-
-    Args:
-        frame: 音频帧
-
-    Returns:
-        短时能量
-    """
     return np.sum(frame ** 2)
 
 
 def compute_short_time_magnitude(frame):
-    """
-    计算短时平均幅度
-
-    Args:
-        frame: 音频帧
-
-    Returns:
-        短时平均幅度
-    """
     return np.sum(np.abs(frame))
 
 
 def compute_zero_crossing_rate(frame):
-    """
-    计算短时过零率
-
-    Args:
-        frame: 音频帧
-
-    Returns:
-        短时过零率
-    """
     signs = np.sign(frame)
     signs[signs == 0] = -1  # 将0视为负数
     zcr = np.sum(np.abs(np.diff(signs))) / 2
@@ -236,16 +178,6 @@ def endpoint_detection(audio_data, frame_length, frame_shift,
 
 
 def create_window(window_type, length):
-    """
-    创建窗函数
-
-    Args:
-        window_type: 窗函数类型 ('rectangular', 'hamming', 'hanning')
-        length: 窗长度
-
-    Returns:
-        窗函数数组
-    """
     if window_type == 'rectangular':
         return np.ones(length)
     elif window_type == 'hamming':
@@ -323,7 +255,7 @@ def process_audio_file(filepath, frame_length, frame_shift,
     # 2. 预处理
     audio_data = preprocess(audio_data)
 
-    metadata = {
+    metadata: dict[str, int|np.ndarray] = {
         'original_length': len(audio_data),
         'sample_rate': sample_rate
     }

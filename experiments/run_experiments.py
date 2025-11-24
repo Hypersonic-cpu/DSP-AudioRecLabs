@@ -14,10 +14,10 @@ warnings.filterwarnings('ignore')
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import config
-from src.audio_processing import process_audio_file
-from src.feature_extraction import extract_features_from_frames, normalize_features
-from src.models import create_classifier
-from src.visualization import (
+from src.time_domain.audio_processing import process_audio_file
+from src.time_domain.feature_extraction import extract_features_from_frames, normalize_features
+from src.time_domain.models import create_classifier
+from src.time_domain.visualization import (
     plot_waveform, plot_endpoint_detection, plot_frame_features,
     plot_confusion_matrix, plot_classifier_comparison, plot_window_comparison,
     plot_mlp_training_history, plot_feature_distribution
@@ -161,7 +161,7 @@ class SpeechRecognitionExperiment:
         print(f"Processing: {os.path.basename(wav_file)}")
 
         # 加载并处理
-        from src.audio_processing import load_wav, preprocess
+        from src.time_domain.audio_processing import load_wav, preprocess
         audio_data, sample_rate = load_wav(wav_file)
         audio_data = preprocess(audio_data)
 
@@ -175,7 +175,7 @@ class SpeechRecognitionExperiment:
         )
 
         # 提取特征
-        from src.feature_extraction import extract_frame_features
+        from src.time_domain.feature_extraction import extract_frame_features
         frame_features = extract_frame_features(frames)
 
         # 可视化

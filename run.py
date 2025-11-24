@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-"""
-便捷启动脚本：运行语音识别实验
-"""
 import os
 import sys
 import argparse
