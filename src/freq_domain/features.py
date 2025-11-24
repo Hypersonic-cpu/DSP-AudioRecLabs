@@ -92,12 +92,12 @@ def compute_power_spectrum(frames: torch.Tensor, n_fft: int) -> torch.Tensor:
     return power
 
 
-def hz_to_mel(freq: float) -> float:
+def hz_to_mel(freq):
     """Convert Hz to Mel scale: 2595 * log10(1 + f/700)"""
     return 2595 * np.log10(1 + freq / 700.0)
 
 
-def mel_to_hz(mel: float) -> float:
+def mel_to_hz(mel):
     """Convert Mel to Hz scale"""
     return 700 * (10 ** (mel / 2595.0) - 1)
 
@@ -170,7 +170,7 @@ def apply_dct(log_mel_energy: torch.Tensor, n_ceps: int) -> torch.Tensor:
 def extract_mfcc(signal: np.ndarray, sample_rate: int,
                  n_mfcc: int = 13, n_fft: int = 512, n_filters: int = 26,
                  frame_len_ms: float = 25, frame_shift_ms: float = 10,
-                 device: str = None) -> torch.Tensor:
+                 device: str = "") -> torch.Tensor:
     """
     Extract MFCC features from audio signal.
 
@@ -286,7 +286,7 @@ def extract_mfcc_with_delta(signal: np.ndarray, sample_rate: int,
                             n_mfcc: int = 13, n_fft: int = 512, n_filters: int = 26,
                             frame_len_ms: float = 25, frame_shift_ms: float = 10,
                             include_delta: bool = True, include_delta_delta: bool = True,
-                            device: str = None) -> torch.Tensor:
+                            device: str = "") -> torch.Tensor:
     """
     Extract MFCC features with optional delta and delta-delta.
 
@@ -390,7 +390,7 @@ def create_gammatone_filterbank(n_filters: int, n_fft: int, sample_rate: int,
 def extract_gfcc(signal: np.ndarray, sample_rate: int,
                  n_gfcc: int = 13, n_fft: int = 512, n_filters: int = 26,
                  frame_len_ms: float = 25, frame_shift_ms: float = 10,
-                 device: str = None) -> torch.Tensor:
+                 device: str = "") -> torch.Tensor:
     """
     Extract GFCC (Gammatone Frequency Cepstral Coefficients) features.
 
@@ -452,7 +452,7 @@ def extract_gfcc_with_delta(signal: np.ndarray, sample_rate: int,
                             n_gfcc: int = 13, n_fft: int = 512, n_filters: int = 26,
                             frame_len_ms: float = 25, frame_shift_ms: float = 10,
                             include_delta: bool = True, include_delta_delta: bool = True,
-                            device: str = None) -> torch.Tensor:
+                            device: str = "") -> torch.Tensor:
     """
     Extract GFCC features with optional delta and delta-delta.
 
