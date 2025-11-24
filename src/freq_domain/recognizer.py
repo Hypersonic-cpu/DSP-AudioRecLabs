@@ -8,6 +8,9 @@ import os
 from tqdm import tqdm
 
 from .features import extract_mfcc
+import config
+from src.time_domain.audio_processing import endpoint_detection
+import numpy as np
 from .dtw import dtw_distance
 
 
@@ -36,9 +39,32 @@ def recognize_single(signal: np.ndarray, sample_rate: int, templates: dict,
     if device is None:
         device = 'mps' if torch.backends.mps.is_available() else 'cpu'
 
-    # Extract MFCC from input
+    # Endpoint detection to get ROI and normalize by average energy
+    try:
+        start_pt, end_pt, _, _ = endpoint_detection(
+            signal,
+            frame_length=config.FRAME_LENGTH,
+            frame_shift=config.FRAME_SHIFT,
+            energy_high_ratio=config.ENERGY_HIGH_RATIO,
+            energy_low_ratio=config.ENERGY_LOW_RATIO,
+            zcr_threshold_ratio=config.ZCR_THRESHOLD_RATIO
+        )
+        signal_roi = signal[start_pt:end_pt]
+        if len(signal_roi) == 0:
+            signal_roi = signal
+    except Exception:
+        signal_roi = signal
+
+    try:
+        mean_energy = np.mean(np.array(signal_roi) ** 2)
+        if mean_energy > 0:
+            signal_roi = signal_roi / float(np.sqrt(mean_energy))
+    except Exception:
+        pass
+
+    # Extract MFCC from input ROI
     input_mfcc = extract_mfcc(
-        signal, sample_rate,
+        signal_roi, sample_rate,
         n_mfcc=n_mfcc, n_fft=n_fft,
         frame_len_ms=frame_len_ms, frame_shift_ms=frame_shift_ms,
         device=device

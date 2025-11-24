@@ -356,10 +356,34 @@ def train_templates_with_feature(train_files, feature_type, n_coef, n_fft,
         for filepath in files:
             signal, sr = load_audio(filepath)
 
+            # Endpoint detection and ROI extraction + average-energy normalization
+            try:
+                from src.time_domain.audio_processing import endpoint_detection
+                start_pt, end_pt, _, _ = endpoint_detection(
+                    signal,
+                    frame_length=config.FRAME_LENGTH,
+                    frame_shift=config.FRAME_SHIFT,
+                    energy_high_ratio=config.ENERGY_HIGH_RATIO,
+                    energy_low_ratio=config.ENERGY_LOW_RATIO,
+                    zcr_threshold_ratio=config.ZCR_THRESHOLD_RATIO
+                )
+                signal_roi = signal[start_pt:end_pt]
+                if len(signal_roi) == 0:
+                    signal_roi = signal
+            except Exception:
+                signal_roi = signal
+
+            try:
+                mean_energy = np.mean(np.array(signal_roi) ** 2)
+                if mean_energy > 0:
+                    signal_roi = signal_roi / float(np.sqrt(mean_energy))
+            except Exception:
+                pass
+
             # Extract features based on type
             if feature_type == 'mfcc':
                 feat = extract_mfcc(
-                    signal, sr, n_mfcc=n_coef, n_fft=n_fft,
+                    signal_roi, sr, n_mfcc=n_coef, n_fft=n_fft,
                     frame_len_ms=frame_len_ms, frame_shift_ms=frame_shift_ms,
                     device=device
                 )

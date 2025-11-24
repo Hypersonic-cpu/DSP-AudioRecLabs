@@ -9,6 +9,10 @@ from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 
 from .features import extract_mfcc
+import config
+from src.time_domain.audio_processing import endpoint_detection
+from src.common.audio_io import load_audio
+import numpy as np
 
 
 def split_dataset(data_dir: str, test_size: float = 0.2,
@@ -102,8 +106,33 @@ def train_templates_from_files(train_files: dict, sample_rate: int = 44100,
                 if sr != sample_rate:
                     print(f"  Warning: {wav_file} has sample rate {sr}, expected {sample_rate}")
 
+                # Endpoint detection to get ROI (use time-domain implementation)
+                try:
+                    start_pt, end_pt, _, _ = endpoint_detection(
+                        signal,
+                        frame_length=config.FRAME_LENGTH,
+                        frame_shift=config.FRAME_SHIFT,
+                        energy_high_ratio=config.ENERGY_HIGH_RATIO,
+                        energy_low_ratio=config.ENERGY_LOW_RATIO,
+                        zcr_threshold_ratio=config.ZCR_THRESHOLD_RATIO
+                    )
+                    signal_roi = signal[start_pt:end_pt]
+                    if len(signal_roi) == 0:
+                        # fallback to original
+                        signal_roi = signal
+                except Exception:
+                    signal_roi = signal
+
+                # Normalize by average energy of ROI (RMS normalization)
+                try:
+                    mean_energy = np.mean(np.array(signal_roi) ** 2)
+                    if mean_energy > 0:
+                        signal_roi = signal_roi / float(np.sqrt(mean_energy))
+                except Exception:
+                    pass
+
                 mfcc = extract_mfcc(
-                    signal, sr,
+                    signal_roi, sr,
                     n_mfcc=n_mfcc, n_fft=n_fft,
                     frame_len_ms=frame_len_ms, frame_shift_ms=frame_shift_ms,
                     device=device

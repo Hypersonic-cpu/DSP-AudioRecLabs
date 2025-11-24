@@ -14,7 +14,8 @@ warnings.filterwarnings('ignore')
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import config
-from src.time_domain.audio_processing import process_audio_file, load_wav, preprocess
+from src.driver.loader import load_wav
+from src.time_domain.audio_processing import process_audio_file, preprocess
 from src.time_domain.feature_extraction import (
     extract_features_from_frames, normalize_features, extract_frame_features
 )
