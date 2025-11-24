@@ -35,9 +35,9 @@ if __name__ == "__main__":
     print("例如: templates = torch.load('path/to/templates.pt')")
 
     """ INFERENCE """
-    from freq_domain.classifiers import recognition_wrapper
-    # 简单的 dummy test
-    dummy_audio = np.random.uniform(-0.5, 0.5, 16000) # 1秒音频 (16kHz)
+    from freq_domain.classifiers import recognition_wrapper, dtw_distance
+    # Simple dummy test
+    dummy_audio = np.random.uniform(-0.5, 0.5, 16000)  # 1s audio (16kHz)
     
     # 伪造一些模板 (实际应从文件加载)
     dummy_templates = {

@@ -23,7 +23,8 @@ seaborn==0.13.2
 six==1.17.0
 sympy==1.14.0
 threadpoolctl==3.6.0
-torch==2.8.0
+torch
 tqdm==4.67.1
+numba
 typing_extensions==4.15.0
 tzdata==2025.2

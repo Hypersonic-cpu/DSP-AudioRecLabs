@@ -17,7 +17,11 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # DATA_DIR = '/path/to/your/data'
 
 # 当前配置：优先使用环境变量，否则使用默认data目录
-DATA_DIR = os.environ.get('SPEECH_DATA_DIR', r'/Users/ding/Downloads/speech_data_cleaned')
+# For Experiment 2-3 (digit recognition 0-9)
+DATA_DIR = os.environ.get('SPEECH_DATA_DIR', r'/Users/ding/Downloads/speech_data_number')
+
+# For Experiment 4 (speaker recognition) - optional
+SPEAKER_DATA_DIR = os.environ.get('SPEAKER_DATA_DIR', r'/Users/ding/Downloads/speech_data_name')
 
 # 结果保存目录
 RESULTS_DIR = os.path.join(BASE_DIR, 'results')
@@ -70,3 +74,12 @@ RANDOM_SEED = 42                 # 随机种子
 # ==================== 可视化参数 ====================
 FIGURE_DPI = 150
 FIGURE_SIZE = (12, 8)
+
+# ==================== 频域分析参数 (Experiment 2-3) ====================
+# MFCC parameters
+N_MFCC = 13                      # Number of MFCC coefficients (12-16)
+N_FFT = 512                      # FFT size
+N_MEL_FILTERS = 26               # Number of Mel filters
+
+# DTW parameters
+DTW_TEMPLATE_STRATEGY = 'first'  # 'first' or 'mean'
