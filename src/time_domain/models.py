@@ -278,7 +278,24 @@ class MLPTrainer:
         Returns:
             trainer: MLPTrainer instance with loaded model and attributes mean/std/class_names
         """
-        checkpoint = torch.load(checkpoint_path, map_location='cpu')
+        # Robust loading to support different PyTorch versions and pickling policies.
+        try:
+            checkpoint = torch.load(checkpoint_path, map_location='cpu')
+        except Exception as e:
+            # Try loading with weights_only=False (PyTorch>=2.6 changed default)
+            try:
+                checkpoint = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
+            except TypeError:
+                # weights_only not supported by this torch; attempt to allowlist numpy reconstruct
+                try:
+                    # This may be required when checkpoint contains numpy objects
+                    torch.serialization.add_safe_globals([np.core.multiarray._reconstruct])
+                except Exception:
+                    pass
+                checkpoint = torch.load(checkpoint_path, map_location='cpu')
+            except Exception:
+                # Re-raise the original error for visibility if fallback fails
+                raise e
 
         input_size = checkpoint.get('input_size')
         hidden_layers = checkpoint.get('hidden_layers', []) or []
