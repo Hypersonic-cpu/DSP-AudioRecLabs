@@ -2,7 +2,7 @@
 特征提取模块：提取时域特征（能量、幅度、过零率）
 """
 import numpy as np
-from src.audio_processing import (
+from src.time_domain.audio_processing import (
     compute_short_time_energy,
     compute_short_time_magnitude,
     compute_zero_crossing_rate

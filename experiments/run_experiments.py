@@ -162,7 +162,7 @@ class SpeechRecognitionExperiment:
         wav_file = wav_files[0]
         print(f"Processing: {os.path.basename(wav_file)}")
 
-        # Load and preprocess audio
+        from src.time_domain.audio_processing import load_wav, preprocess
         audio_data, sample_rate = load_wav(wav_file)
         audio_data = preprocess(audio_data)
 
@@ -175,7 +175,7 @@ class SpeechRecognitionExperiment:
             do_endpoint_detection=True
         )
 
-        # Extract frame-level features
+        from src.time_domain.feature_extraction import extract_frame_features
         frame_features = extract_frame_features(frames)
 
         # 可视化
